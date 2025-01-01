@@ -57,3 +57,11 @@ AUX scnlen 0xe nreloc 2 nlnno 0
 00000000 T _vswprintf
 00000000 I __imp__vsprintf_s
 ```
+
+## Graphics with assembly
+
+- Use `nasm -f bin pixel.asm -o pixel.com` to assemble the file as  graphic project and then run it in DOS emulator.
+    - Dosbox is used by running dosbox.exe
+    - Then running  `MOUNT C C:\Users\evilm\OneDrive\Documents\Work\me\assembly`
+    - Then switch to c: by typing c:
+    - Then you can run .com files by typing their name e.g. pixel

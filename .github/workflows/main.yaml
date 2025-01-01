@@ -18,7 +18,7 @@ jobs:
 
       - name: Append content to README
         run: |
-          cat notes.md >> README.md
+          cat readme_og.md notes.md > README.md
           git config --global user.email "${{ secrets.USER_EMAIL }}"
           git config --global user.name "Zach Upstone"
           git add README.md

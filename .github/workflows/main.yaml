@@ -1,0 +1,29 @@
+name: Update README
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write 
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Append content to README
+        run: |
+          cat notes.md >> README.md
+          git config --global user.email "generic@gmail.com"
+          git config --global user.name "Zach Upstone"
+          git add README.md
+          git commit -m "Update README with content from notes.md"
+          
+      - name: Push changes to GitHub
+        run: |
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git

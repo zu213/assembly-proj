@@ -1,0 +1,22 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "Build Assembly",
+        "type": "shell",
+        "command": "nasm",
+        "args": ["-f", "elf32", "hello.asm", "-o", "hello.o"],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        }
+      },
+      {
+        "label": "Link Assembly",
+        "type": "shell",
+        "command": "ld",
+        "args": ["-m", "elf_i386", "hello.o", "-o", "hello"],
+        "dependsOn": "Build Assembly"
+      }
+    ]
+  }

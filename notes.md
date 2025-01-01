@@ -1,12 +1,26 @@
 
 # Notes
 
+### General script
+
+- The data section is used for declaring initialized data or constants. This data does not change at runtime. 
+
+- The bss section is used for declaring variables
+
+- The text section is used for keeping the actual code
+
+### hello world
 - Print world code can be found in hello.asm
 
 - Use nasm to make a win32 obj files like this `nasm -f win32 hello.asm -o hello.obj`
 
+#### Linking with c, the with_c file uses printf wihich is external
 - Use gcc to compile it to an.exe like this `gcc hello.obj -o hello.exe -lkernel32 -luser32 -lmsvcrt` the bonus params are for libraries.
 
+#### Linking otherwise
+- You can use the command `ld hello.o -o hello.exe` to compile otherwise, this can be run by typing .\hello afterwards.
+
+### helper commands
  - You can dump object file with commadn obj `dump -d hello.obj`, for an output like the below 
 
 ```
@@ -58,10 +72,28 @@ AUX scnlen 0xe nreloc 2 nlnno 0
 00000000 I __imp__vsprintf_s
 ```
 
-## Graphics with assembly
+### Graphics with assembly
 
 - Use `nasm -f bin pixel.asm -o pixel.com` to assemble the file as  graphic project and then run it in DOS emulator.
     - Dosbox is used by running dosbox.exe
     - Then running  `MOUNT C C:\Users\evilm\OneDrive\Documents\Work\me\assembly`
     - Then switch to c: by typing c:
     - Then you can run .com files by typing their name e.g. pixel
+
+## Basic assembly commands list for memory
+
+This website [here](https://hackaday.io/project/188193-assembly-language-for-ecm-16ttl-homebrew-cpu/log/213335-mnemonics-list) has more on it
+
+- INC COUNT        ; Increment the memory variable COUNT
+
+- MOV TOTAL, 48    ; Transfer the value 48 in the 
+                 ; memory variable TOTAL
+					  
+- ADD AH, BH       ; Add the content of the 
+                 ; BH register into the AH register
+					  
+- AND MASK1, 128   ; Perform AND operation on the 
+                 ; variable MASK1 and 128
+					  
+- ADD MARKS, 10    ; Add 10 to the variable MARKS
+- MOV AL, 10       ; Transfer the value 10 to the AL register

@@ -1,3 +1,5 @@
+org 100h
+
 section .data
     prompt db 'Enter a number: $'
     newline db 0x0A, 0x0D, '$'  ; Newline characters for formatting
@@ -14,19 +16,23 @@ section .text
     global _start
 
 _start:
-    ; Initialize result to 0
-    mov dword [result], 0
+    ; Print the message to the screen
+    mov ah, 9       ; AH=9 means "print string" function
+    mov dx, prompt   ; Load the offset address of 'hello' into DX
+    int 21h         ; Call the DOS interrupt 21h to execute the function
 
-    ; Print the prompt message
-    mov ah, 09h          ; DOS function to print a string
-    mov dx, prompt       ; Load address of prompt
-    int 21h              ; Call interrupt 21h (DOS function)
+    call read_input
+    ret
+    ; Exit the program
+    mov ah, 4Ch     ; AH=4Ch means "exit" function
+    xor al, al      ; Set AL to 0 (return code)
+    int 21h         ; Call the DOS interrupt 21h to exit the program
 
 read_input:
-    ; Read a character from input
-    mov ah, 01h          ; DOS function to read a character from input
-    int 21h              ; Call interrupt 21h (DOS function)
-    mov [input], al      ; Store the character in input variable
+    mov ah, 01h     ; load up read character function     
+    int 21h         ; execute
+    mov [input], al  ; saved read to input
+
 
     ; Check if the input is Enter (0x0D), if so, stop reading
     cmp al, 0x0D         ; Compare input character with Enter (0x0D)
@@ -37,12 +43,15 @@ read_input:
     jb invalid_input_msg ; If the character is not a digit, jump to error message
 
     ; Multiply result by 10 (using proper multiplication)
-    mov eax, [result]    ; Load current result into eax
-    mov edx, eax         ; Copy eax to edx
-    imul eax, edx, 10    ; Multiply result by 10 using edx
-    add eax, al          ; Add the new digit to the result
 
-    mov [result], eax    ; Store the updated result
+    mov eax, [result]   ; Load current result into eax
+    shl eax, 1          ; Multiply result by 2 (eax * 2)
+    shl eax, 2          ; Multiply result by 4 (eax * 4), now eax = eax * 10
+    movzx eax, al       ; Zero-extend al (8-bit) to eax (32-bit)
+    add eax, [result]   ; Add the new value (al) to eax
+    mov [result], eax   ; Store updated result
+
+    ;mov [result], eax    ; Store the updated result
 
     ; Loop back to read next input
     jmp read_input
@@ -75,24 +84,30 @@ invalid_input_msg:
 
 ; Subroutine to convert the number in eax to a string and print it
 print_number:
+        mov ecx, buffer + 5
+        dec ecx                  ; Move buffer pointer backwards
+        mov byte [ecx], 'a'  
     ; Convert the number in eax to a string
-    mov ecx, buffer + 10 ; Point ECX to the end of the buffer (we'll fill the buffer backwards)
-    mov byte [ecx], 0     ; Null-terminate the string
+    mov ecx, buffer + 10     ; Point ECX to the end of the buffer (we'll fill the buffer backwards)
+    mov byte [ecx], '$'     ; Null-terminate the string
 
-    convert_loop:
-        dec ecx            ; Move buffer pointer backwards
-        xor edx, edx       ; Clear edx (remainder)
-        mov ecx, 10        ; Load the divisor into ecx
-        div ecx            ; Divide eax by 10, result in eax, remainder in edx
-        add dl, '0'        ; Convert remainder to ASCII
-        mov [ecx], dl      ; Store the ASCII character in the buffer
+    ; Save the divisor in another register (ebx)
+    mov ebx, 10              ; Divisor (base 10)
+
+    convert_loop: 
+        dec ecx
+        xor edx, edx             ; Clear edx (remainder)
+        div ebx                  ; Divide eax by 10, result in eax, remainder in edx
+        add dl, '0'              ; Convert remainder to ASCII
+        mov byte [ecx], dl            ; Store the ASCII character in the buffer
 
         ; If eax is 0, we've finished converting the number
         test eax, eax
-        jnz convert_loop
+        jnz convert_loop         ; If eax != 0, continue the loop
 
     ; Print the number string
-    mov ah, 09h
-    mov dx, ecx
-    int 21h
+    mov ah, 09h              ; DOS function to print string
+    lea dx, [ecx]            ; Load address of the string into dx
+    int 21h                  ; Call interrupt 21h to print the string
+
     ret

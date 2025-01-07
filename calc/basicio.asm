@@ -31,7 +31,7 @@ read_input:
 ; something here breaks al but i cant work out what it is :((((((
     mov ah, 01h         ; Load up read character function
     int 21h             ; Execute to read a character
-    mov [input], al     ; Store the read character into 'input'
+    ;mov [input], al     ; Store the read character into 'input'
 
     ; Check if the input is Enter (0x0D), if so, stop reading
     cmp al, 0x0D        ; Compare input character with Enter (0x0D)
@@ -44,15 +44,16 @@ read_input:
 
     ; Convert the ASCII value to a numeric value (0-9)
     sub al, '0'         ; Convert ASCII '0'-'9' to numeric value 0-9
+    mov [input], al
 
     ; Multiply result by 10
-    xor eax, eax  
+    ;xor eax, eax  
     mov eax, [result]   ; Load current result into eax
     imul eax, 10   ; eax = eax * 10
 
     ; Add the new digit (al) to the result
     xor edx, edx  
-    mov al, [input]
+    mov dl, [input]
     add eax, edx        ; Add the digit (al) to the result in eax
     mov [result], eax   ; Store updated result back into 'result'
 
@@ -71,6 +72,7 @@ done_input:
     int 21h
 
     ; Convert the number to a string and print it
+    xor eax, eax  
     mov eax, [result]    ; Load result into eax
     call print_number    ; Convert and print number as string
 

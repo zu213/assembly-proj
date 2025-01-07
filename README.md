@@ -99,3 +99,12 @@ This website [here](https://hackaday.io/project/188193-assembly-language-for-ecm
 					  
 - ADD MARKS, 10    ; Add 10 to the variable MARKS
 - MOV AL, 10       ; Transfer the value 10 to the AL register
+
+## register names
+- ax  is the register on which division and sub traction are performed !
+- dx is where remainder are deposited
+adding e to any of these extends them to 32 bits, so eax
+- to clear these we can run xor eax, eax
+- dl is the lower half of dx
+- dh is the upper half
+- IT IS VERY IMPORTANT TO PUT THE CORRECT REGISTER WHEN TRANSFERRING DATA OVER E.G. IN BASICIO.ASMI MAP INPUT TO DL AND THAT IS THE CORRECT SIZE.

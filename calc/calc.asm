@@ -85,8 +85,9 @@ add_number:
     jmp print_number
 
 mult_number:
+    xor ax, ax
     mov al, [num1]    ; Load first number into AL
-    add al, [num2]    ; Add second number to AL
+    imul ax, [num2]
     mov [result], al  ; Store the result
 
     jmp print_number

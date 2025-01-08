@@ -1,11 +1,11 @@
 org 100h
 
 section .data
-    buffer db 10 dup(0) 
+    buffer db 10 dup(0) ; buffer for placing output into
     prompt1 db 'Enter first number: $', 0
     prompt2 db 'Enter second number: $', 0
     prompt3 db 'Enter operation: $', 0
-    result_msg db 'The sum is: $', 0
+    result_msg db 'The answer is: $', 0
     newline db 0x0A, 0x0D, '$'  ; Newline characters for formatting
 
 section .bss
@@ -17,7 +17,6 @@ section .text
     global _start
 
 _start:
-    ; Print prompt1
     mov ah, 09h
     lea dx, [prompt1]
     int 21h
@@ -28,33 +27,80 @@ _start:
     sub al, '0'  ; Convert ASCII to numeric (0-9)
     mov [num1], al  ; Save the first number
 
+    ;print new line
+    mov ah, 09h       
+    lea dx, [newline]
+    int 21h
+    ; print prompt 2
     mov ah, 09h
     lea dx, [prompt2]
     int 21h
 
     ; Read second number
-    mov ah, 01h  ; Function to read a character
-    int 21h      ; Read character into AL
-    sub al, '0'  ; Convert ASCII to numeric (0-9)
-    mov [num2], al  ; Save the second number
+    mov ah, 01h 
+    int 21h     
+    sub al, '0'  
+    mov [num2], al 
+
+    ;print new line
+    mov ah, 09h       
+    lea dx, [newline]
+    int 21h
 
     mov ah, 09h
     lea dx, [prompt3]
     int 21h
 
     ; Read calc char
-    mov ah, 01h  ; Function to read a character
-    int 21h      ; Read character into AL
+    mov ah, 01h
+    int 21h
 
-    cmp al, 0x2B        ; Compare input character with Enter (0x0D)
+    ;print new line
+    mov ah, 09h       
+    lea dx, [newline]
+    int 21h
+
+    cmp al, 0x2B
     je add_number
 
-    ret
+    cmp al, 0x2A
+    je mult_number
 
+    cmp al, 0x2D
+    je sub_number
+
+    cmp al, 0x2F
+    je div_number
+
+    ; Exit program unsuccessfully
+    mov ah, 4Ch
+    mov al, 1
+    int 21h
 
 add_number:
+    mov al, [num1]    ; Load first number into AL
+    add al, [num2]    ; Add second number to AL
+    mov [result], al  ; Store the result
 
-    ; Add the numbers
+    jmp print_number
+
+mult_number:
+    mov al, [num1]    ; Load first number into AL
+    add al, [num2]    ; Add second number to AL
+    mov [result], al  ; Store the result
+
+    jmp print_number
+
+
+sub_number:
+    mov al, [num1]    ; Load first number into AL
+    add al, [num2]    ; Add second number to AL
+    mov [result], al  ; Store the result
+
+    jmp print_number
+
+
+div_number:
     mov al, [num1]    ; Load first number into AL
     add al, [num2]    ; Add second number to AL
     mov [result], al  ; Store the result
@@ -98,4 +144,5 @@ print_number:
 
     ; Exit program
     mov ah, 4Ch
+    mov al, 0
     int 21h

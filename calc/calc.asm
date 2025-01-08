@@ -4,6 +4,7 @@ section .data
     buffer db 10 dup(0) 
     prompt1 db 'Enter first number: $', 0
     prompt2 db 'Enter second number: $', 0
+    prompt3 db 'Enter operation: $', 0
     result_msg db 'The sum is: $', 0
     newline db 0x0A, 0x0D, '$'  ; Newline characters for formatting
 
@@ -27,7 +28,6 @@ _start:
     sub al, '0'  ; Convert ASCII to numeric (0-9)
     mov [num1], al  ; Save the first number
 
-    ; Print prompt2
     mov ah, 09h
     lea dx, [prompt2]
     int 21h
@@ -38,19 +38,35 @@ _start:
     sub al, '0'  ; Convert ASCII to numeric (0-9)
     mov [num2], al  ; Save the second number
 
+    mov ah, 09h
+    lea dx, [prompt3]
+    int 21h
+
+    ; Read calc char
+    mov ah, 01h  ; Function to read a character
+    int 21h      ; Read character into AL
+
+    cmp al, 0x2B        ; Compare input character with Enter (0x0D)
+    je add_number
+
+    ret
+
+
+add_number:
+
     ; Add the numbers
     mov al, [num1]    ; Load first number into AL
     add al, [num2]    ; Add second number to AL
     mov [result], al  ; Store the result
 
+    jmp print_number
+
+print_number:
     ; Print result message
     mov ah, 09h
     lea dx, [result_msg]
     int 21h
 
-    jmp print_number
-
-print_number:
     xor ax, ax
     mov al, [result]
     ;mov eax, result

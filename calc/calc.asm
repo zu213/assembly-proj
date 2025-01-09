@@ -95,15 +95,19 @@ mult_number:
 
 sub_number:
     mov al, [num1]    ; Load first number into AL
-    add al, [num2]    ; Add second number to AL
+    sub al, [num2]    ; Add second number to AL
     mov [result], al  ; Store the result
 
     jmp print_number
 
 
 div_number:
-    mov al, [num1]    ; Load first number into AL
-    add al, [num2]    ; Add second number to AL
+    xor ax, ax
+    mov al, [num1]
+    xor bx, bx
+    mov bl, [num2]
+    xor dx, dx
+    div bl    ; Add second number to AL
     mov [result], al  ; Store the result
 
     jmp print_number
@@ -117,6 +121,7 @@ print_number:
     xor ax, ax
     mov al, [result]
     ;mov eax, result
+    xor ebx, ebx
     mov ebx, 10            ; Base 10
     lea di, [buffer + 10]  ; Point DI to the end of the buffer
     xor edx, edx           ; Clear edx (will hold remainder)

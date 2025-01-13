@@ -1,6 +1,6 @@
 
 
-org 0x100          ; Origin point for the program (COM file)
+org 0x100
 
 start:
     ; Set video mode 13h (320x200, 256 colors)

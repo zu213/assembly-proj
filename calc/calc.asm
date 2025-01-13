@@ -9,9 +9,9 @@ section .data
     newline db 0x0A, 0x0D, '$'  ; Newline characters for formatting
 
 section .bss
-    num1 resb 1  ; Reserve space for first input number
-    num2 resb 1  ; Reserve space for second input number
-    result resb 1  ; Reserve space for result (store sum as a single byte)
+    num1 resb 1
+    num2 resb 1
+    result resb 1
 
 section .text
     global _start
@@ -22,10 +22,10 @@ _start:
     int 21h
 
     ; Read first number
-    mov ah, 01h  ; Function to read a character
-    int 21h      ; Read character into AL
-    sub al, '0'  ; Convert ASCII to numeric (0-9)
-    mov [num1], al  ; Save the first number
+    mov ah, 01h
+    int 21h
+    sub al, '0'
+    mov [num1], al
 
     ;print new line
     mov ah, 09h       
@@ -60,6 +60,7 @@ _start:
     lea dx, [newline]
     int 21h
 
+    ; check whihc operator is used and jump accordingly
     cmp al, 0x2B
     je add_number
 
@@ -72,31 +73,29 @@ _start:
     cmp al, 0x2F
     je div_number
 
-    ; Exit program unsuccessfully
     mov ah, 4Ch
     mov al, 1
     int 21h
 
 add_number:
-    mov al, [num1]    ; Load first number into AL
-    add al, [num2]    ; Add second number to AL
-    mov [result], al  ; Store the result
+    mov al, [num1]
+    add al, [num2]
+    mov [result], al
 
     jmp print_number
 
 mult_number:
     xor ax, ax
-    mov al, [num1]    ; Load first number into AL
+    mov al, [num1]
     imul ax, [num2]
-    mov [result], al  ; Store the result
-
+    mov [result], al
     jmp print_number
 
 
 sub_number:
-    mov al, [num1]    ; Load first number into AL
-    sub al, [num2]    ; Add second number to AL
-    mov [result], al  ; Store the result
+    mov al, [num1]
+    sub al, [num2]
+    mov [result], al
 
     jmp print_number
 
@@ -107,8 +106,8 @@ div_number:
     xor bx, bx
     mov bl, [num2]
     xor dx, dx
-    div bl    ; Add second number to AL
-    mov [result], al  ; Store the result
+    div bl
+    mov [result], al
 
     jmp print_number
 
@@ -122,26 +121,25 @@ print_number:
     mov al, [result]
     ;mov eax, result
     xor ebx, ebx
-    mov ebx, 10            ; Base 10
-    lea di, [buffer + 10]  ; Point DI to the end of the buffer
-    xor edx, edx           ; Clear edx (will hold remainder)
-    ;mov eax, 12
+    mov ebx, 10
+    lea di, [buffer + 10]
+    xor edx, edx
     ; Null-terminate the buffer
     mov byte [di], '$'
 
-    .convert_loop:
-        dec di                 ; Move buffer pointer backwards
-        xor edx, edx           ; Clear edx before division
-        div ebx                ; Divide eax by 10, quotient in eax, remainder in dl
-        add dl, '0'            ; Convert remainder (digit) to ASCII
-        mov byte [di], dl           ; Store the ASCII character in the buffer
+    .convert_loop: ; convert number to list of chars
+        dec di
+        xor edx, edx
+        div ebx
+        add dl, '0'
+        mov byte [di], dl
 
         test eax, eax          ; Check if quotient is zero
-        jnz .convert_loop      ; If not, continue dividing
+        jnz .convert_loop
 
     ; Print the number string
     mov ah, 09h
-    lea dx, [di]       ; Load address of the number string (skip null terminator)
+    lea dx, [di]
     int 21h
 
     mov ah, 09h

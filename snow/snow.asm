@@ -23,7 +23,7 @@ draw_pixel:
     loop draw_pixel
 
     ; setup duration for animate is cx
-    mov cx, 30
+    mov cx, 100
     mov dx, 0
 
 animate:
@@ -48,7 +48,7 @@ check_count:
     jg change_pixel 
 
     ; once we reach top paint new row of pixels  for new snow
-    mov bx, 10 ; set this for number of new snows per row
+    mov bx, 5 ; set this for number of new snows per row
     call paint_new_pixel
     ; end of outer loop
     loop animate
@@ -80,30 +80,21 @@ skip_bonus_add:
 
     jmp check_count
 
-;delay:
-;    mov bx, 0x000F 
-;delay_loop:
-;    dec bx       
-;    jnz delay_loop
-;    ret
-
-; callable functions
-
 random_number:
     imul bx, 13
     add bx, 15
     ret
 
 paint_new_pixel: ; paint the new row of pixels
-    
-    mov ax, 0xA000
-    mov es, ax     
-    add dx, 149
+    mov ax, 0xA000  
+    mov es, ax
+    rdtsc                  ; Get the current time stamp counter into EDX:EAX
+    xor edx, edx           
+    add ax, si        ; modify it slightly for bonus randomness 
+    imul ax, 13
 
-    cmp dx, 321
-    jl print_colour ; skip minus if we are less than 320
-
-    sub dx, 320
+    mov si, 320
+    div si
 
 print_colour:
     mov di, dx

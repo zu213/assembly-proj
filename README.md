@@ -1,6 +1,10 @@
 # Assembly coding
 
 Me messing around with trying to learn some assembly code.
+
+
+
+
 # Notes
 
 ### General script
@@ -100,11 +104,33 @@ This website [here](https://hackaday.io/project/188193-assembly-language-for-ecm
 - ADD MARKS, 10    ; Add 10 to the variable MARKS
 - MOV AL, 10       ; Transfer the value 10 to the AL register
 
-## register names
-- ax  is the register on which division and sub traction are performed !
-- dx is where remainder are deposited
-adding e to any of these extends them to 32 bits, so eax
-- to clear these we can run xor eax, eax
-- dl is the lower half of dx
-- dh is the upper half
-- IT IS VERY IMPORTANT TO PUT THE CORRECT REGISTER WHEN TRANSFERRING DATA OVER E.G. IN BASICIO.ASMI MAP INPUT TO DL AND THAT IS THE CORRECT SIZE.
+## Further notes
+
+Assembly has some absic function that can be called by loaded up something into the ah register than calling a $ cahracter,in x86 such as printing a string
+
+mov ah, 9 // load up ah  
+mov dx, stringhere // put string into output register  
+int 21h // execute  
+
+stolen jump command table 
+```
+Mnemonic        Condition tested  Description  
+jo              OF = 1            overflow 
+jno             OF = 0            not overflow 
+jc, jb, jnae    CF = 1            carry / below / not above nor equal
+jnc, jae, jnb   CF = 0            not carry / above or equal / not below
+je, jz          ZF = 1            equal / zero
+jne, jnz        ZF = 0            not equal / not zero
+jbe, jna        CF or ZF = 1      below or equal / not above
+ja, jnbe        CF or ZF = 0      above / not below or equal
+js              SF = 1            sign 
+jns             SF = 0            not sign 
+jp, jpe         PF = 1            parity / parity even 
+jnp, jpo        PF = 0            not parity / parity odd 
+jl, jnge        SF xor OF = 1     less / not greater nor equal
+jge, jnl        SF xor OF = 0     greater or equal / not less
+jle, jng    (SF xor OF) or ZF = 1 less or equal / not greater
+jg, jnle    (SF xor OF) or ZF = 0 greater / not less nor equal 
+```
+
+credit: https://stackoverflow.com/questions/53451732/js-and-jb-instructions-in-assembly

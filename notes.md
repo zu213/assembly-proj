@@ -128,3 +128,12 @@ jg, jnle    (SF xor OF) or ZF = 0 greater / not less nor equal
 ```
 
 credit: https://stackoverflow.com/questions/53451732/js-and-jb-instructions-in-assembly
+
+**IMPORTANTLY, registers work with extra characters so ax, eax, al ah, all effect the same set where eax is extended ax and covers an extra byte in fornt of it, al is the last bit of ax
+There are are therefore only four main registers in 32 bit
+ax, (main register, for example division will be performed on this register)
+bx,
+cx, ( used in looping)
+dx, (remainders from division go here)**
+
+you can clear registers by xor'ing them i.e. xor eax, eax clears eax

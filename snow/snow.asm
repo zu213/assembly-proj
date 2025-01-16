@@ -1,7 +1,7 @@
 org 0x100
 
 start:
-    ; Set video mode 13h (320x200, 256 colors)
+    ; 1) First we draw the Initial screen
     mov ah, 0x00       
     mov al, 0x13        
     int 0x10
@@ -12,7 +12,7 @@ start:
 
 draw_pixel:
     ; Draw initial pixels in loop
-    call random_number
+    call distribute_snowflake
     
     mov ax, 0xA000
     mov es, ax
@@ -23,15 +23,14 @@ draw_pixel:
     loop draw_pixel
 
     ; setup duration for animate is cx
-    mov cx, 100
+    mov cx, 1000
     mov dx, 0
 
 animate:
+    ;2) Next we animate the snow
     mov ebx, 64000
-    ;call delay ; dont need delay cause its already slow :0
 
 change_pixel: ; iterate through the pixels editing them
-  
     sub ebx, 1
     mov ax, 0xA000
     mov es, ax
@@ -42,16 +41,15 @@ change_pixel: ; iterate through the pixels editing them
     cmp al, 0x0F
     je change_to_black
 
-check_count:
-    ; end of inner loop
+return_from_black: ; jump back here if change to black
     cmp ebx, 0
-    jg change_pixel 
+    jg change_pixel ; loop through all pixels on screen
 
-    ; once we reach top paint new row of pixels  for new snow
+    ; After looping we paint a new row of pixels for new snow
     mov bx, 5 ; set this for number of new snows per row
     call paint_new_pixel
-    ; end of outer loop
-    loop animate
+
+    loop animate ; loop for duration of animation
 
     ; Return to text mode (mode 3)
     mov ah, 0x00
@@ -65,22 +63,23 @@ check_count:
 ; jumping functions
 
 change_to_black:
-    mov al, 0x00        ; Set the color to black (0x00)
+    mov al, 0x00
     mov [es:di], al
     add di, 319
     test cl, 1
-    jz skip_bonus_add
+    jz move_left ; alternate between the snow moving left or right
 
-    add di, 2
+    add di, 2 ; move_right
 
-skip_bonus_add:
+move_left:
     mov al, 0x0F 
     mov [es:di], al
     sub di, 321
 
-    jmp check_count
+    jmp return_from_black
 
-random_number:
+distribute_snowflake:
+    ; function used for inital snow distribution
     imul bx, 13
     add bx, 15
     ret
@@ -88,17 +87,19 @@ random_number:
 paint_new_pixel: ; paint the new row of pixels
     mov ax, 0xA000  
     mov es, ax
-    rdtsc                  ; Get the current time stamp counter into EDX:EAX
+    ; We need more randoness for the new row so we use the system clock
+    rdtsc            ; Get the current time stamp counter into EDX:EAX
     xor edx, edx           
     add ax, si        ; modify it slightly for bonus randomness 
     imul ax, 13
 
     mov si, 320
-    div si
+    div si ; fit it to the first rows size
 
 print_colour:
     mov di, dx
 
+    ; Add the new snowflake
     mov al, 0x0F
     mov [es:di], al
 
